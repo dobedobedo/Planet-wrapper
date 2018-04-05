@@ -12,7 +12,7 @@ import tkinter as tk
 
 # Specify the file where you store the API Key
 # For Windows users, the 'r' character before the single quote is very important.
-# Do not delete it. Otherwise, you will probably encounter unicode problem
+# Do not delete it. Otherwise, you will probably encounter unicode error
 API_KEY_PATH = r'YOUR/PATH/.PL_API_KEY'
 
 if __name__ == '__main__':
