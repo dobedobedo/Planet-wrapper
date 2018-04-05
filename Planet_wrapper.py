@@ -11,7 +11,9 @@ from Modules import Items, Items_asset
 import tkinter as tk
 
 # Specify the file where you store the API Key
-API_KEY_PATH = 'YOUR/PATH/.PL_API_KEY'
+# For Windows users, the 'r' character before the single quote is very important.
+# Do not delete it. Otherwise, you will probably encounter unicode problem
+API_KEY_PATH = r'YOUR/PATH/.PL_API_KEY'
 
 if __name__ == '__main__':
     try:
