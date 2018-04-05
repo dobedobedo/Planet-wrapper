@@ -21,7 +21,7 @@ For more information about planet API key, refer to https://support.planet.com/h
 4. Next, it will prompt the user to enter the _date range_ (in format yyyy-mm-dd)  
 5. Finally, it will prompt the user to enter the _cloud cover range_ (range from 0 to 1)  
   
-The application will then start to search based on those criteria. Once the search finishes, it will report the user the number of available images for each item type. Then the user can decide whether to download them or not. During the download process, there will be no information appears at the moment (future feature). However, when the download finishes, there will be another prompt window appears to let the user know if the task is successful.  
+The application will then start to search based on those criteria. Once the search finishes, it will report the user the number of available images for each item type, then the user can decide whether to download them or not. During the download process, there will be no information appears at the moment (future feature). However, when the download finishes, there will be another prompt window appears to let the user know if the task is successful.  
 # Future work  
 Command line interface will be added to allow the application works on servers without graphical interfaces.  
 Consider to add a real-time progress report when download. However, I need to figure out how to parse the output.
