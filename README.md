@@ -6,7 +6,7 @@ This tool needs the following dependencies:
 - gdal  
 - geojson  
   
-Make sure the location of **planet** binery is in your _$PATH_ variable  
+Make sure the location of **planet** binery is in your _$PATH_ variable (which means you can execute **planet** directly without entering to its path).  
 # Prerequisite  
 The planet API needs user's API key to access the service. To make this tool recognise your API Key, three methods are provided:  
 1. export your API Key to environmental variable PL_API_KEY  
