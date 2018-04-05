@@ -38,23 +38,24 @@ def main(API_KEY_PATH, Items, Items_asset):
     AOI = prompt_widget.AskOpenFile('Choose a file containing the area of interest', 
                                     AOI_filetype)
     
-    # Close application if no input file with extension is selected
-    try:
-        ext = os.path.splitext(AOI)[1]
-    except AttributeError:
-        prompt_widget.InfoBox('Abort', 'No geometry is detected')
-        sys.exit(0)
+    ext = os.path.splitext(AOI)[1]
         
     # Create GeoJSON object based on extension
-    if 'shp' in ext or 'SHP' in ext or 'Shp' in ext:
-                
-    # Create GeoJSON AOI Feature Collection from shapefile
-        AOI_geojson = Geo_tool.CreateGeojsonFC(AOI)
+    # Close application if no input file with extension is selected
+    try:
+        if 'shp' in ext or 'SHP' in ext or 'Shp' in ext:
+                    
+        # Create GeoJSON AOI Feature Collection from shapefile
+            AOI_geojson = Geo_tool.CreateGeojsonFC(AOI)
+            
+        else:
         
-    else:
-    
-    # Load GeoJSON for geojson extension
-        AOI_geojson = Geo_tool.LoadGeoJSON(AOI)
+        # Load GeoJSON for geojson extension
+            AOI_geojson = Geo_tool.LoadGeoJSON(AOI)
+            
+    except FileNotFoundError:
+        prompt_widget.InfoBox('Abort', 'No geometry is detected')
+        sys.exit(0)
         
     # Detect geometry types in GeoJSON object
     AOI_types = set()

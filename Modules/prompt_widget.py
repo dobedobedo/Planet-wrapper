@@ -92,10 +92,12 @@ def DateInputBox():
         def cleanup(self, event):
             try:
                 SYear, SMonth, SDay = self.SDate.get().split('-')
-                self.start = '-'.join([SYear, SMonth.zfill(2), SDay.zfill(2)])
+                float(SYear), float(SMonth), float(SDay)
+                self.start = '-'.join([SYear[0:4], SMonth[0:2].zfill(2), SDay[0:2].zfill(2)])
                 
                 EYear, EMonth, EDay = self.EDate.get().split('-')
-                self.end = '-'.join([EYear, EMonth.zfill(2), EDay.zfill(2)])
+                float(EYear), float(EMonth), float(EDay)
+                self.end = '-'.join([EYear[0:4], EMonth[0:2].zfill(2), EDay[0:2].zfill(2)])
                 
                 if re.match('^[0-9]{4}-[0-9]{2}-[0-9]{2}$', self.start) and \
                    re.match('^[0-9]{4}-[0-9]{2}-[0-9]{2}$', self.end):
@@ -165,6 +167,13 @@ def CloudCover_inputBox():
                     self.mincloud = str(float(Min))
                     self.maxcloud = str(float(Max))
                     self.quit()
+                elif (eval(Max) - eval(Min)) < 0:
+                    showerror('Error!', 
+                              'Make sure the maximum is larger than minimum!')
+                    self.min.delete(0, 'end')
+                    self.min.insert('end', 0)
+                    self.max.delete(0, 'end')
+                    self.max.insert('end', 1)
                 else:
                     showerror('Error!', 
                               'Make sure the input are in range between 0 and 1!')
@@ -230,19 +239,26 @@ def AreaCover_inputBox():
                     self.mincover = str(float(Min))
                     self.maxcover = str(float(Max))
                     self.quit()
+                elif (eval(Max) - eval(Min)) < 0:
+                    showerror('Error!', 
+                              'Make sure the maximum is larger than minimum!')
+                    self.min.delete(0, 'end')
+                    self.min.insert('end', 0)
+                    self.max.delete(0, 'end')
+                    self.max.insert('end', 100)
                 else:
                     showerror('Error!', 
                               'Make sure the input are in range between 0 and 100!')
                     self.min.delete(0, 'end')
                     self.min.insert('end', 0)
                     self.max.delete(0, 'end')
-                    self.max.insert('end', 1)
+                    self.max.insert('end', 100)
             except ValueError:
                 showerror('Error!', 'You must input numbers')
                 self.min.delete(0, 'end')
                 self.min.insert('end', 0)
                 self.max.delete(0, 'end')
-                self.max.insert('end', 1)
+                self.max.insert('end', 100)
     m = popupWindow()
     m.mainloop()
     m.destroy()

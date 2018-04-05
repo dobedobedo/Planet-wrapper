@@ -6,7 +6,7 @@ Created on Thu Apr  5 11:35:46 2018
 @author: uqytu1
 """
 
-__all__ = ['Planet_Tool_gui']
+__all__ = ['Planet_Tool_gui', 'Planet_Tool_cli']
 
 # Define Item ans assets for downloadable planet images 
 Items = ['PSScene3Band', 'PSScene4Band', 'PSOrthoTile', 
