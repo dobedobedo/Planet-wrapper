@@ -79,8 +79,8 @@ def main(API_KEY_PATH, Items, Items_asset):
                       '--item-type', selected_item, 
                       '--range', 'cloud_cover', 'gte', MinCloud, 
                       '--range', 'cloud_cover', 'lte', MaxCloud, 
-                      '--date', 'acquired', 'gt', StartDate, 
-                      '--date', 'acquired', 'lt', EndDate, 
+                      '--date', 'acquired', 'gte', StartDate, 
+                      '--date', 'acquired', 'lte', EndDate, 
                       '--geom', str(feature)]
     # Add selected asset types to search arguments
         for asset in selected_assets[selected_item]:
