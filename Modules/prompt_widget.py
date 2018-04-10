@@ -14,48 +14,6 @@ import re
 from datetime import datetime, timedelta
 import subprocess
 
-def KeyInputBox():
-    class popupWindow(tk.Tk):
-        def __init__(self):
-            tk.Tk.__init__(self)
-            self.resizable(width=False, height=False)
-            self.title('Please enter your Planet API Key')
-            self.protocol('WM_DELETE_WINDOW', self.on_exit)
-            self.Label = tk.Label(self, text='Planet API Key:')
-            self.Label.pack()
-            self.Entry = tk.Entry(self, width=30)
-            self.Entry.bind('<Return>', self.cleanup)
-            self.Entry.bind('<KP_Enter>', self.cleanup)
-            self.Entry.pack()
-            self.Ok = tk.Button(self,text='Ok', width=40, height=2)
-            self.Ok.bind('<Button-1>', self.cleanup)
-            self.Ok.pack()
-            # Make popup window at the centre
-            self.update_idletasks()
-            w = self.winfo_screenwidth()
-            h = self.winfo_screenheight()
-            size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
-            x = w/2 - size[0]/2
-            y = h/2 - size[1]/2
-            self.geometry('%dx%d+%d+%d' % (size + (x, y)))
-        
-        def on_exit(self):
-        # When you click x to exit, this function is called
-            if askyesno("Exit", "Do you want to quit the application?"):
-                self.destroy()
-                sys.exit(0)
-                
-        def cleanup(self, event):
-            self.PL_API_Key = self.Entry.get()
-            if len(self.PL_API_Key) == 0:
-                showerror('Warning!', 'Input cannot be blank!')
-            else:
-                self.quit()
-        
-    m = popupWindow()
-    m.mainloop()
-    m.destroy()
-    return m.PL_API_Key
 
 def AuthInputBox():
     class popupWindow(tk.Tk):
