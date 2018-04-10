@@ -30,7 +30,7 @@ Items_asset = {
         'visual', 'visual_xml', 'udm'], 
     'REScene':[
         'basic_analytic_b1', 'basic_analytic_b2', 'basic_analytic_b3', 'basic_analytic_b4', 'basic_analytic_b5', 
-        'basic_analytic_b1_nitf', 'basic_analytic_b2_nitf', 'basic_analytic_b3_nitf', 'basic_analytic_b4_ntif', 
+        'basic_analytic_b1_nitf', 'basic_analytic_b2_nitf', 'basic_analytic_b3_nitf', 'basic_analytic_b4_nitf', 
         'basic_analytic_b5_nitf', 'basic_analytic_xml', 'basic_analytic_xml_nitf', 'basic_analytic_sci', 
         'browse', 'basic_analytic_rpc', 'basic_udm'], 
     'REOrthoTile':[
