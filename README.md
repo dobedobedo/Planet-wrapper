@@ -1,14 +1,13 @@
 # Planet-wrapper
 A Python 3 wrapper of Planet API to search and download images
 # Dependencies  
-This tool needs the following dependencies:  
+This script can only be executed on Python version higher than 3.5. It needs the following dependencies:  
 - planet  
 - gdal  
 - geojson  
   
 Make sure the location of **planet** binery is in your _$PATH_ variable (which means you can execute **planet** directly without entering to its path).  
 # Prerequisite  
-This script can only be executed on Python version higher than 3.5  
 The planet API needs user's API key to access the service. To make this tool recognise your API Key, two methods are provided:  
 1. export your API Key to environmental variable PL_API_KEY    
 3. When the above method fails, the application will prompt user to enter account credential    
