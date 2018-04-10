@@ -10,7 +10,8 @@ __all__ = ['Planet_Tool_gui', 'Planet_Tool_cli']
 
 # Define Item ans assets for downloadable planet images 
 Items = ['PSScene3Band', 'PSScene4Band', 'PSOrthoTile', 
-         'REScene', 'REOrthoTile', 'Landsat8L1G', 'Sentinel2L1C']
+         'REScene', 'REOrthoTile', 'SkySatScene', 
+         'Landsat8L1G', 'Sentinel2L1C']
 
 Items_asset = {
     'PSScene3Band':[
@@ -34,6 +35,11 @@ Items_asset = {
         'browse', 'basic_analytic_rpc', 'basic_udm'], 
     'REOrthoTile':[
         'analytic', 'analytic_xml', 'visual', 'visual_xml', 'udm'], 
+    'SkySatScene':[
+        'ortho_visual', 'ortho_analytic_dn', 'ortho_analytic_udm', 'ortho_pansharpened', 
+        'ortho_pansharpened_udm', 'ortho_panchromatic_dn', 'ortho_panchromatic_udm', 
+        'basic_analytic_dn', 'basic_analytic_dn_rpc', 'basic_panchromatic_dn', 
+        'basic_panchromatic_dn_rpc', 'basic_udm'], 
     'Landsat8L1G':[
         'analytic_b1', 'analytic_b2', 'analytic_b3', 'analytic_b4', 'analytic_b5', 'analytic_b6', 
         'analytic_b7', 'analytic_b8', 'analytic_b9', 'analytic_b10', 'analytic_b11', 'analytic_bqa', 
