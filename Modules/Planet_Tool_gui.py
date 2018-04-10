@@ -12,18 +12,13 @@ import subprocess
 import json
 from . import Geo_tool
 from . import prompt_widget
+from . import auth
 
-def main(API_KEY_PATH, Items, Items_asset):
+def main(Items, Items_asset):
     
-    # Try to get Planet API Key from different methods
-    try:
-        with open(API_KEY_PATH) as KEY:
-            PL_API_KEY = KEY.readline().strip('\n')
-    except FileNotFoundError:
-        try:
-            PL_API_KEY = os.environ['PL_API_KEY']
-        except KeyError:
-            PL_API_KEY = prompt_widget.KeyInputBox()
+    # Try to see whether there is a valid account init
+    if not auth.ValidateAccount():
+        prompt_widget.AuthInputBox()
     
     # Ask user select items and assets for download
     selected_items = prompt_widget.CheckBox(Items, 'item')
@@ -76,7 +71,7 @@ def main(API_KEY_PATH, Items, Items_asset):
     
     for selected_item, feature in [
             (selected_item, feature) for selected_item in selected_items for feature in AOI_geojson['features']]:
-        Search_Arg = ['planet', '-k', PL_API_KEY, 'data', 'search', 
+        Search_Arg = ['planet', 'data', 'search', 
                       '--item-type', selected_item, 
                       '--range', 'cloud_cover', 'gte', MinCloud, 
                       '--range', 'cloud_cover', 'lte', MaxCloud, 
@@ -86,11 +81,11 @@ def main(API_KEY_PATH, Items, Items_asset):
     # Add selected asset types to search arguments
         for asset in selected_assets[selected_item]:
             Search_Arg[7:7] = ['--asset-type', asset]
-          
+        
+        search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
-            Search_Result.append(json.loads((subprocess.run(Search_Arg,
-                                                            check=True,
-                                                            stdout=subprocess.PIPE).stdout).decode()))
+            search.check_returncode()
+            Search_Result.append(json.loads(search.stdout.decode()))
             
     # Use cover area percentage to filter search result
             for index, element in enumerate(Search_Result[-1]['features']):
@@ -109,9 +104,10 @@ def main(API_KEY_PATH, Items, Items_asset):
                 except NameError:
                     break
     
-        except subprocess.CalledProcessError as e:
+        except subprocess.CalledProcessError:
             prompt_widget.ErrorBox(
-                    'Error', 'Search Failed for {}: {}'.format(selected_item, e.output))
+                    'Error', 'Search Failed for {}: {}'.format(
+                            selected_item, search.stderr.decode()))
             continue
             
         try:
@@ -140,17 +136,17 @@ def main(API_KEY_PATH, Items, Items_asset):
                     (item['properties']['item_type'], 
                      item['id']) for Search in Search_Result for item in Search['features']]:
                         
-                Download_Arg = ['planet', '-k', PL_API_KEY, 'data', 'download', 
+                Download_Arg = ['planet', 'data', 'download', 
                                 '--item-type', item, '--string-in', 'id', ID, 
                                 '--dest', outdir]
                 for asset in selected_assets[item]:
                     Download_Arg[7:7] = ['--asset-type', asset]
-                    
+                    Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 try:
-                    Result = subprocess.run(Download_Arg, check=True, stdout=subprocess.PIPE)
+                    Result.check_returncode()
                     
-                except subprocess.CalledProcessError as e:
-                    prompt_widget.ErrorBox('Error', 'Download Failed for {}: {}'.format(ID, e.output))
+                except subprocess.CalledProcessError:
+                    prompt_widget.ErrorBox('Error', 'Download Failed for {}: {}'.format(ID, Result.stderr.decode()))
                     
             prompt_widget.InfoBox('Success', 'Images are downloaded')
     else:

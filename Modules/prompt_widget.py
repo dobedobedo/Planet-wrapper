@@ -12,6 +12,7 @@ from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
 import sys
 import re
 from datetime import datetime, timedelta
+import subprocess
 
 def KeyInputBox():
     class popupWindow(tk.Tk):
@@ -55,6 +56,64 @@ def KeyInputBox():
     m.mainloop()
     m.destroy()
     return m.PL_API_Key
+
+def AuthInputBox():
+    class popupWindow(tk.Tk):
+        def __init__(self):
+            tk.Tk.__init__(self)
+            self.resizable(width=False, height=False)
+            self.title('Please enter your Planet account credential')
+            self.protocol('WM_DELETE_WINDOW', self.on_exit)
+            self.Label = tk.Label(self, text='Planet account email:')
+            self.Label.pack()
+            self.email = tk.Entry(self, width=30)
+            self.email.bind('<Return>', self.jump_to_pwd)
+            self.email.bind('<KP_Enter>', self.jump_to_pwd)
+            self.email.pack()
+            self.Label = tk.Label(self, text='Planet account password:')
+            self.Label.pack()
+            self.password = tk.Entry(self, width=30, show='*')
+            self.password.bind('<Return>', self.cleanup)
+            self.password.bind('<KP_Enter>', self.cleanup)
+            self.password.pack()
+            self.Ok = tk.Button(self,text='Ok', width=40, height=2)
+            self.Ok.bind('<Button-1>', self.cleanup)
+            self.Ok.pack()
+            # Make popup window at the centre
+            self.update_idletasks()
+            w = self.winfo_screenwidth()
+            h = self.winfo_screenheight()
+            size = tuple(int(_) for _ in self.geometry().split('+')[0].split('x'))
+            x = w/2 - size[0]/2
+            y = h/2 - size[1]/2
+            self.geometry('%dx%d+%d+%d' % (size + (x, y)))
+        
+        def jump_to_pwd(self, event):
+            self.password.focus()
+        
+        def on_exit(self):
+        # When you click x to exit, this function is called
+            if askyesno("Exit", "Do you want to quit the application?"):
+                self.destroy()
+                sys.exit(0)
+                
+        def cleanup(self, event):
+            self.PL_acc = self.email.get()
+            self.PL_pwd = self.password.get()
+            if len(self.PL_acc) == 0 or len(self.PL_pwd) == 0:
+                showerror('Warning!', 'Input cannot be blank!')
+            else:
+                try:
+                    cmd = ['planet', 'init', '--email', m.PL_acc, '--password', m.PL_pwd]
+                    subprocess.run(cmd, check=True)
+                    self.quit()
+                except subprocess.CalledProcessError:
+                    showerror('Authentication failed!', 'Credential is not correct.')
+                    self.password.delete(0, 'end')
+        
+    m = popupWindow()
+    m.mainloop()
+    m.destroy()
 
 def DateInputBox():        
     class popupWindow(tk.Tk):

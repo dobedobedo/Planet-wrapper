@@ -7,6 +7,7 @@ Created on Wed Apr  4 13:54:30 2018
 """
 from osgeo import osr, ogr
 import geojson
+from . import prompt_widget
 
 def CreateGeojsonFC(AOI):
     # Open shapefile
@@ -27,7 +28,12 @@ def CreateGeojsonFC(AOI):
     for FID in featList:
         feat = lyr.GetFeature(FID)
         geom = feat.GetGeometryRef()
-        geom.Transform(coordTrans)
+        try:
+            geom.Transform(coordTrans)
+        except TypeError:
+            prompt_widget.InfoBox('No projection found', 
+                                  'If the CRS is not EPSG::4326, search result may not be desired.')
+            pass
         
         if (geom.GetGeometryName() == 'MULTIPOLYGON'):
             count = 0

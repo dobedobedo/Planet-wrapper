@@ -11,7 +11,9 @@ import subprocess
 import json
 from datetime import datetime, timedelta
 import re
+import getpass
 from . import Geo_tool
+from . import auth
 
 def ParseInputNumbers(selects):
     try:
@@ -29,19 +31,24 @@ def ParseInputNumbers(selects):
         print('Can\'t recognise input. Please try again!')
         return False
 
-def main(API_KEY_PATH, Items, Items_asset):
+def main(Items, Items_asset):
     
     print('Welcome! During the process, you can escape the program anytime by pressing Ctrl + C ')
-    
-    # Try to get Planet API Key from different methods
-    try:
-        with open(API_KEY_PATH) as KEY:
-            PL_API_KEY = KEY.readline().strip('\n')
-    except FileNotFoundError:
-        try:
-            PL_API_KEY = os.environ['PL_API_KEY']
-        except KeyError:
-            PL_API_KEY = input('Please enter your Planet API Key')
+
+    # Try to see whether there is a valid account init
+    if not auth.ValidateAccount():
+        while True:
+            try:
+                email = input('Your planet account: ')
+                pwd = getpass.getpass('Your password: ')
+                cmd = cmd = ['planet', 'init', '--email', email, '--password', pwd]
+                subprocess.run(cmd, check=True)
+                email = None
+                pwd = None
+                break
+            except subprocess.CalledProcessError:
+                print('Credential is not correct!')
+                continue
     
     # Ask user to select items for download
     print('Input the item numbers you want to download:')
@@ -182,7 +189,7 @@ def main(API_KEY_PATH, Items, Items_asset):
     
     for selected_item, feature in [
             (selected_item, feature) for selected_item in selected_items for feature in AOI_geojson['features']]:
-        Search_Arg = ['planet', '-k', PL_API_KEY, 'data', 'search', 
+        Search_Arg = ['planet', 'data', 'search', 
                       '--item-type', selected_item, 
                       '--range', 'cloud_cover', 'gte', MinCloud, 
                       '--range', 'cloud_cover', 'lte', MaxCloud, 
@@ -192,11 +199,11 @@ def main(API_KEY_PATH, Items, Items_asset):
     # Add selected asset types to search arguments
         for asset in selected_assets[selected_item]:
             Search_Arg[7:7] = ['--asset-type', asset]
-          
+        
+        search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
-            Search_Result.append(json.loads((subprocess.run(Search_Arg,
-                                                            check=True,
-                                                            stdout=subprocess.PIPE).stdout).decode()))
+            search.check_returncode()
+            Search_Result.append(json.loads(search.stdout.decode()))
             
     # Use cover area percentage to filter search result
             for index, element in enumerate(Search_Result[-1]['features']):
@@ -215,8 +222,8 @@ def main(API_KEY_PATH, Items, Items_asset):
                 except NameError:
                     break
     
-        except subprocess.CalledProcessError as e:
-            print('Search Failed for {}: {}'.format(selected_item, e.output))
+        except subprocess.CalledProcessError:
+            print('Search Failed for {}: {}'.format(selected_item, search.stderr.decode()))
             continue
             
         try:
@@ -251,18 +258,19 @@ def main(API_KEY_PATH, Items, Items_asset):
                         (item['properties']['item_type'], 
                          item['id']) for Search in Search_Result for item in Search['features']]:
                             
-                    Download_Arg = ['planet', '-k', PL_API_KEY, 'data', 'download', 
+                    Download_Arg = ['planet', 'data', 'download', 
                                     '--item-type', item, '--string-in', 'id', ID, 
                                     '--dest', outdir]
                     for asset in selected_assets[item]:
                         Download_Arg[7:7] = ['--asset-type', asset]
-                        
+                    
+                    Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     try:
-                        Result = subprocess.run(Download_Arg, check=True, stdout=subprocess.PIPE)
+                        
                         print(Result.stdout.decode())
                         
-                    except subprocess.CalledProcessError as e:
-                        print('Download Failed for {}: {}'.format(ID, e.output))
+                    except subprocess.CalledProcessError:
+                        print('Download Failed for {}: {}'.format(ID, Result.stderr))
                         
                 print('Images are downloaded')
                 
