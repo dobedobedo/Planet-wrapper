@@ -198,7 +198,7 @@ def main(Items, Items_asset):
                       '--geom', str(feature)]
     # Add selected asset types to search arguments
         for asset in selected_assets[selected_item]:
-            Search_Arg[7:7] = ['--asset-type', asset]
+            Search_Arg[5:5] = ['--asset-type', asset]
         
         search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
@@ -262,7 +262,7 @@ def main(Items, Items_asset):
                                     '--item-type', item, '--string-in', 'id', ID, 
                                     '--dest', outdir]
                     for asset in selected_assets[item]:
-                        Download_Arg[7:7] = ['--asset-type', asset]
+                        Download_Arg[5:5] = ['--asset-type', asset]
                     
                     Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     try:
