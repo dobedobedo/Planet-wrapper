@@ -10,10 +10,6 @@ from Modules import Planet_Tool_gui, Planet_Tool_cli
 from Modules import Items, Items_asset
 import tkinter as tk
 
-# Specify the file where you store the API Key
-# For Windows users, the 'r' character before the single quote is very important.
-# Do not delete it. Otherwise, you will probably encounter unicode error
-
 if __name__ == '__main__':
     try:
         Planet_Tool_gui.main(Items, Items_asset)
