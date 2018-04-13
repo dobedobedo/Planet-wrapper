@@ -1,20 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  4 13:54:30 2018
 
 @author: uqytu1
 """
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
 
-from builtins import map
-from builtins import int
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
@@ -72,7 +63,7 @@ def AuthInputBox():
             else:
                 try:
                     cmd = ['planet', 'init', '--email', m.PL_acc, '--password', m.PL_pwd]
-                    subprocess.check_call(cmd)
+                    subprocess.run(cmd, check=True)
                     self.quit()
                 except subprocess.CalledProcessError:
                     showerror('Authentication failed!', 'Credential is not correct.')
@@ -153,7 +144,7 @@ def CloudCover_inputBox():
             self.resizable(width=False, height=False)
             self.title('Cloud cover')
             self.protocol('WM_DELETE_WINDOW', self.on_exit)
-            self.l = tk.Label(self, text='Please enter the desired cloud cover range (0-1)')
+            self.l = tk.Label(self, text='Please enter the desired cloud cover range (0-100)')
             self.l.pack()
             self.minLabel = tk.Label(self, text='Minimum cloud cover')
             self.minLabel.pack()
@@ -163,7 +154,7 @@ def CloudCover_inputBox():
             self.maxLabel = tk.Label(self, text='Maximum cloud cover')
             self.maxLabel.pack()
             self.max = tk.Entry(self, width=30)
-            self.max.insert('end', 1)
+            self.max.insert('end', 100)
             self.max.pack()
             self.b = tk.Button(self,text='Ok', width=40, height=2)
             self.b.bind('<Button-1>', self.cleanup)
@@ -189,9 +180,9 @@ def CloudCover_inputBox():
             try:
                 float(Min)
                 float(Max)
-                if eval(Min) >= 0 and eval(Max) <=1:
-                    self.mincloud = str(float(Min))
-                    self.maxcloud = str(float(Max))
+                if eval(Min) >= 0 and eval(Max) <=100:
+                    self.mincloud = '{:.2f}'.format(float(Min)/100)
+                    self.maxcloud = '{:.2f}'.format(float(Max)/100)
                     self.quit()
                 elif (eval(Max) - eval(Min)) < 0:
                     showerror('Error!', 
@@ -202,7 +193,7 @@ def CloudCover_inputBox():
                     self.max.insert('end', 1)
                 else:
                     showerror('Error!', 
-                              'Make sure the input are in range between 0 and 1!')
+                              'Make sure the input are in range between 0 and 100!')
                     self.min.delete(0, 'end')
                     self.min.insert('end', 0)
                     self.max.delete(0, 'end')
