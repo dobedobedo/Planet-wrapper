@@ -69,7 +69,7 @@ def main(Items, Items_asset):
     
     # Check whether input is valid
     while True:
-        selects = input('>>>').split()
+        selects = input('>>> ').split()
         selected_index = ParseInputNumbers(selects)
         if selected_index:
             break
@@ -90,7 +90,7 @@ def main(Items, Items_asset):
         
     # Check whether input is valid
         while True:
-            selects = input('>>>').split()
+            selects = input('>>> ').split()
             selected_index = ParseInputNumbers(selects)
             if selected_index:
                 break
@@ -186,14 +186,14 @@ def main(Items, Items_asset):
     # Ask the user to input cloud cover range
     while True:
         try:
-            MinCloud = float(input('Please enter the minimum cloud cover (0-1): '))
-            MaxCloud = float(input('Please enter the maximum cloud cover (0-1): '))
-            if (MaxCloud - MinCloud) >= 0 and MinCloud >= 0 and MaxCloud <= 1:
-                MinCloud = str(MinCloud)
-                MaxCloud = str(MaxCloud)
+            MinCloud = float(input('Please enter the minimum cloud cover percentage (0-100): '))
+            MaxCloud = float(input('Please enter the maximum cloud cover percentage (0-100): '))
+            if (MaxCloud - MinCloud) >= 0 and MinCloud >= 0 and MaxCloud <= 100:
+                MinCloud = '{:.2f}'.format(MinCloud/100)
+                MaxCloud = '{:.2f}'.format(MaxCloud/100)
                 break
             else:
-                print('Maximum cover must be larger than minimum cover in range between 0 to 1!')
+                print('Maximum cover must be larger than minimum cover in range between 0 to 100!')
                 continue
         except ValueError:
             print('You must input numbers')
