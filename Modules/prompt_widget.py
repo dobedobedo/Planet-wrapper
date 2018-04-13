@@ -144,7 +144,7 @@ def CloudCover_inputBox():
             self.resizable(width=False, height=False)
             self.title('Cloud cover')
             self.protocol('WM_DELETE_WINDOW', self.on_exit)
-            self.l = tk.Label(self, text='Please enter the desired cloud cover range (0-100)')
+            self.l = tk.Label(self, text='Please enter the desired cloud cover percentage (0-100)')
             self.l.pack()
             self.minLabel = tk.Label(self, text='Minimum cloud cover')
             self.minLabel.pack()
