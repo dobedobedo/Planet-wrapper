@@ -1,11 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  4 13:54:30 2018
 
 @author: uqytu1
 """
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import map
+from builtins import int
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
@@ -63,7 +72,7 @@ def AuthInputBox():
             else:
                 try:
                     cmd = ['planet', 'init', '--email', m.PL_acc, '--password', m.PL_pwd]
-                    subprocess.run(cmd, check=True)
+                    subprocess.check_call(cmd)
                     self.quit()
                 except subprocess.CalledProcessError:
                     showerror('Authentication failed!', 'Credential is not correct.')
@@ -144,7 +153,7 @@ def CloudCover_inputBox():
             self.resizable(width=False, height=False)
             self.title('Cloud cover')
             self.protocol('WM_DELETE_WINDOW', self.on_exit)
-            self.l = tk.Label(self, text='Please enter the desired cloud cover percentage (0-100)')
+            self.l = tk.Label(self, text='Please enter the desired cloud cover range (0-100)')
             self.l.pack()
             self.minLabel = tk.Label(self, text='Minimum cloud cover')
             self.minLabel.pack()

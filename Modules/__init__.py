@@ -1,11 +1,17 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr  5 11:35:46 2018
 
 @author: uqytu1
 """
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
+from future import standard_library
+standard_library.install_aliases()
 __all__ = ['Planet_Tool_gui', 'Planet_Tool_cli']
 
 # Define Item ans assets for downloadable planet images 
