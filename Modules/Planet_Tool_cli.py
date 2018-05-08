@@ -1,11 +1,22 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr  5 16:22:30 2018
 
 @author: uqytu1
 """
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import division
+from __future__ import absolute_import
 
+from builtins import dict
+from builtins import range
+from builtins import int
+from builtins import str
+from builtins import input
+from future import standard_library
+standard_library.install_aliases()
 import os
 import subprocess
 import json
@@ -42,7 +53,7 @@ def main(Items, Items_asset):
                 email = input('Your planet account: ')
                 pwd = getpass.getpass('Your password: ')
                 cmd = cmd = ['planet', 'init', '--email', email, '--password', pwd]
-                subprocess.run(cmd, check=True)
+                subprocess.check_call(cmd)
                 email = None
                 pwd = None
                 break
@@ -94,7 +105,12 @@ def main(Items, Items_asset):
     AOI_filetype = ['.shp', '.geojson', '.json']
     while True:
         AOI = input('Enter the file name containing the area of interest: ')
-        ext = os.path.splitext(AOI)[1]
+        try:
+            ext = os.path.splitext(AOI)[1]
+        except AttributeError:
+            print('Invalud input file. Please try again.')
+            continue
+        
         if os.path.isfile(AOI) and ext.lower() in AOI_filetype:
             break
         else:
@@ -200,10 +216,10 @@ def main(Items, Items_asset):
         for asset in selected_assets[selected_item]:
             Search_Arg[5:5] = ['--asset-type', asset]
         
-        search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        try:
-            search.check_returncode()
-            Search_Result.append(json.loads(search.stdout.decode()))
+        search = subprocess.Popen(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = search.communicate()
+        if search.returncode == 0:
+            Search_Result.append(json.loads(stdout.decode()))
             
     # Use cover area percentage to filter search result
             for index, element in enumerate(Search_Result[-1]['features']):
@@ -222,8 +238,8 @@ def main(Items, Items_asset):
                 except NameError:
                     break
     
-        except subprocess.CalledProcessError:
-            print('Search Failed for {}: {}'.format(selected_item, search.stderr.decode()))
+        else:
+            print('Search Failed for {}: {}'.format(selected_item, stderr.decode()))
             continue
             
         try:
@@ -264,13 +280,14 @@ def main(Items, Items_asset):
                     for asset in selected_assets[item]:
                         Download_Arg[5:5] = ['--asset-type', asset]
                     
-                    Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    try:
+                    Result = subprocess.Popen(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    stdout, stderr = Result.communicate()
+                    if Result.returncode == 0:
                         
-                        print(Result.stdout.decode())
+                        print(stdout.decode())
                         
-                    except subprocess.CalledProcessError:
-                        print('Download Failed for {}: {}'.format(ID, Result.stderr))
+                    else:
+                        print('Download Failed for {}: {}'.format(ID, stderr))
                         
                 print('Images are downloaded')
                 break

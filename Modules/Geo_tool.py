@@ -1,10 +1,20 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  4 13:54:30 2018
 
 @author: uqytu1
 """
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import int
+from builtins import open
+from builtins import str
+from builtins import range
+from future import standard_library
+standard_library.install_aliases()
 from osgeo import osr, ogr
 import geojson
 from . import prompt_widget
