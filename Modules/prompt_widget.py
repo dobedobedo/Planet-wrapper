@@ -190,20 +190,20 @@ def CloudCover_inputBox():
                     self.min.delete(0, 'end')
                     self.min.insert('end', 0)
                     self.max.delete(0, 'end')
-                    self.max.insert('end', 1)
+                    self.max.insert('end', 100)
                 else:
                     showerror('Error!', 
                               'Make sure the input are in range between 0 and 100!')
                     self.min.delete(0, 'end')
                     self.min.insert('end', 0)
                     self.max.delete(0, 'end')
-                    self.max.insert('end', 1)
+                    self.max.insert('end', 100)
             except ValueError:
                 showerror('Error!', 'You must input numbers')
                 self.min.delete(0, 'end')
                 self.min.insert('end', 0)
                 self.max.delete(0, 'end')
-                self.max.insert('end', 1)
+                self.max.insert('end', 100)
     m = popupWindow()
     m.mainloop()
     m.destroy()
