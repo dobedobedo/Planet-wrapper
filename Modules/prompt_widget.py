@@ -1,20 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  4 13:54:30 2018
 
 @author: uqytu1
 """
-from __future__ import division
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import absolute_import
 
-from builtins import map
-from builtins import int
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
@@ -72,7 +63,7 @@ def AuthInputBox():
             else:
                 try:
                     cmd = ['planet', 'init', '--email', m.PL_acc, '--password', m.PL_pwd]
-                    subprocess.check_call(cmd)
+                    subprocess.run(cmd, check=True)
                     self.quit()
                 except subprocess.CalledProcessError:
                     showerror('Authentication failed!', 'Credential is not correct.')
