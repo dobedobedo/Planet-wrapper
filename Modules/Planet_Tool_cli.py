@@ -94,7 +94,12 @@ def main(Items, Items_asset):
     AOI_filetype = ['.shp', '.geojson', '.json']
     while True:
         AOI = input('Enter the file name containing the area of interest: ')
-        ext = os.path.splitext(AOI)[1]
+        try:
+            ext = os.path.splitext(AOI)[1]
+        except AttributeError:
+            print('Invalud input file. Please try again.')
+            continue
+        
         if os.path.isfile(AOI) and ext.lower() in AOI_filetype:
             break
         else:
