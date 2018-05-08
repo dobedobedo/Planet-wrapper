@@ -290,7 +290,6 @@ def main(Items, Items_asset):
                         print('Download Failed for {}: {}'.format(ID, stderr))
                         
                 print('Images are downloaded')
-                break
                 
             elif User_Confirm.lower() == 'n' or User_Confirm.lower() == 'no':
                 break
