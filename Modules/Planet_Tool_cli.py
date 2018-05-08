@@ -1,22 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr  5 16:22:30 2018
 
 @author: uqytu1
 """
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
-from builtins import dict
-from builtins import range
-from builtins import int
-from builtins import str
-from builtins import input
-from future import standard_library
-standard_library.install_aliases()
 import os
 import subprocess
 import json
@@ -53,7 +42,7 @@ def main(Items, Items_asset):
                 email = input('Your planet account: ')
                 pwd = getpass.getpass('Your password: ')
                 cmd = cmd = ['planet', 'init', '--email', email, '--password', pwd]
-                subprocess.check_call(cmd)
+                subprocess.run(cmd, check=True)
                 email = None
                 pwd = None
                 break
@@ -69,7 +58,7 @@ def main(Items, Items_asset):
     
     # Check whether input is valid
     while True:
-        selects = input('>>>').split()
+        selects = input('>>> ').split()
         selected_index = ParseInputNumbers(selects)
         if selected_index:
             break
@@ -90,7 +79,7 @@ def main(Items, Items_asset):
         
     # Check whether input is valid
         while True:
-            selects = input('>>>').split()
+            selects = input('>>> ').split()
             selected_index = ParseInputNumbers(selects)
             if selected_index:
                 break
@@ -186,8 +175,8 @@ def main(Items, Items_asset):
     # Ask the user to input cloud cover range
     while True:
         try:
-            MinCloud = float(input('Please enter the minimum cloud cover (0-100): '))
-            MaxCloud = float(input('Please enter the maximum cloud cover (0-100): '))
+            MinCloud = float(input('Please enter the minimum cloud cover percentage (0-100): '))
+            MaxCloud = float(input('Please enter the maximum cloud cover percentage (0-100): '))
             if (MaxCloud - MinCloud) >= 0 and MinCloud >= 0 and MaxCloud <= 100:
                 MinCloud = '{:.2f}'.format(MinCloud/100)
                 MaxCloud = '{:.2f}'.format(MaxCloud/100)
@@ -216,10 +205,10 @@ def main(Items, Items_asset):
         for asset in selected_assets[selected_item]:
             Search_Arg[5:5] = ['--asset-type', asset]
         
-        search = subprocess.Popen(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = search.communicate()
-        if search.returncode == 0:
-            Search_Result.append(json.loads(stdout.decode()))
+        search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            search.check_returncode()
+            Search_Result.append(json.loads(search.stdout.decode()))
             
     # Use cover area percentage to filter search result
             for index, element in enumerate(Search_Result[-1]['features']):
@@ -238,8 +227,8 @@ def main(Items, Items_asset):
                 except NameError:
                     break
     
-        else:
-            print('Search Failed for {}: {}'.format(selected_item, stderr.decode()))
+        except subprocess.CalledProcessError:
+            print('Search Failed for {}: {}'.format(selected_item, search.stderr.decode()))
             continue
             
         try:
@@ -280,14 +269,13 @@ def main(Items, Items_asset):
                     for asset in selected_assets[item]:
                         Download_Arg[5:5] = ['--asset-type', asset]
                     
-                    Result = subprocess.Popen(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout, stderr = Result.communicate()
-                    if Result.returncode == 0:
+                    Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    try:
                         
-                        print(stdout.decode())
+                        print(Result.stdout.decode())
                         
-                    else:
-                        print('Download Failed for {}: {}'.format(ID, stderr))
+                    except subprocess.CalledProcessError:
+                        print('Download Failed for {}: {}'.format(ID, Result.stderr))
                         
                 print('Images are downloaded')
                 break

@@ -1,19 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar  6 10:10:05 2018
 
 @author: uqytu1
 """
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
 
-from builtins import dict
-from builtins import str
-from future import standard_library
-standard_library.install_aliases()
 import os
 import sys
 import subprocess
@@ -36,10 +28,11 @@ def main(Items, Items_asset):
                 Items_asset[selected_item], 'asset', selected_item)
     
     # Ask user input and output file names
-    AOI_filetype = (('Shapefile', ('*.shp', '*.SHP', '*.Shp')), 
-                     ('GeoJSON', ('*.geojson', '*.GEOJSON', '*.json', '*.JSON')))
+    AOI_filetype = [('Shapefile', ['*.shp', '*.SHP', '*.Shp']), 
+                     ('GeoJSON', ['*.geojson', '*.GEOJSON', '*.json', '*.JSON'])]
     AOI = prompt_widget.AskOpenFile('Choose a file containing the area of interest', 
                                     AOI_filetype)
+    
     try:
         ext = os.path.splitext(AOI)[1]
     except AttributeError:
@@ -93,10 +86,10 @@ def main(Items, Items_asset):
         for asset in selected_assets[selected_item]:
             Search_Arg[5:5] = ['--asset-type', asset]
         
-        search = subprocess.Popen(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = search.communicate()
-        if search.returncode == 0:
-            Search_Result.append(json.loads(stdout.decode()))
+        search = subprocess.run(Search_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            search.check_returncode()
+            Search_Result.append(json.loads(search.stdout.decode()))
             
     # Use cover area percentage to filter search result
             for index, element in enumerate(Search_Result[-1]['features']):
@@ -115,10 +108,10 @@ def main(Items, Items_asset):
                 except NameError:
                     break
     
-        else:
+        except subprocess.CalledProcessError:
             prompt_widget.ErrorBox(
                     'Error', 'Search Failed for {}: {}'.format(
-                            selected_item, stderr.decode()))
+                            selected_item, search.stderr.decode()))
             continue
             
         try:
@@ -152,13 +145,12 @@ def main(Items, Items_asset):
                                 '--dest', outdir]
                 for asset in selected_assets[item]:
                     Download_Arg[5:5] = ['--asset-type', asset]
-                    Result = subprocess.Popen(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    stdout, stderr = Result.communicate()
-                if Result.returncode == 0:
-                    pass
+                    Result = subprocess.run(Download_Arg, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                try:
+                    Result.check_returncode()
                     
-                else:
-                    prompt_widget.ErrorBox('Error', 'Download Failed for {}: {}'.format(ID, stderr.decode()))
+                except subprocess.CalledProcessError:
+                    prompt_widget.ErrorBox('Error', 'Download Failed for {}: {}'.format(ID, Result.stderr.decode()))
                     
             prompt_widget.InfoBox('Success', 'Images are downloaded')
     else:
