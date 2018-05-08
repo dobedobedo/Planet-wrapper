@@ -33,7 +33,11 @@ def main(Items, Items_asset):
     AOI = prompt_widget.AskOpenFile('Choose a file containing the area of interest', 
                                     AOI_filetype)
     
-    ext = os.path.splitext(AOI)[1]
+    try:
+        ext = os.path.splitext(AOI)[1]
+    except AttributeError:
+        prompt_widget.InfoBox('Abort', 'No geometry is detected')
+        sys.exit(0)
         
     # Create GeoJSON object based on extension
     # Close application if no input file with extension is selected
