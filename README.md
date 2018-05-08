@@ -1,7 +1,7 @@
 # Planet-wrapper
 A Python 3 wrapper of Planet API to search and download images
 # Dependencies  
-This script can only be executed on Python version higher than 3.5. It needs the following dependencies:  
+This script can only be executed on Python version higher than 3.5. Please refer to _Py2/3_ branch for Python 2/3 compatability. It needs the following dependencies:  
 - planet  
 - gdal  
 - geojson  
