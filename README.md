@@ -14,7 +14,7 @@ The planet API needs user's API key to access the service. To make this tool rec
   
 For more information about planet API key, refer to https://support.planet.com/hc/en-us/articles/212318178-What-is-my-API-key-  
 # Usage  
-1. Execute the script, the tool will prompt the user to select search item type and asset type. For more details regarding the codename, refer to https://www.planet.com/docs/spec-sheets/.  
+1. Execute the script, the tool will prompt the user to select search item type and asset type. For more details regarding the codename, refer to https://developers.planet.com/docs/apis/data/items-assets/.  
 2. Another prompt window appear to ask user select a file containing the area of interest. Two formats are supported at the moment: **Shapefile (\*.shp)** and **GeoJSON (\*.geojson; \*.json)**. It can contains multiple _points_, _polygons_, and _features_.  
 3. The application will detect the geometry type of the input file. If _polygon_ is detected, it will prompt the user whether to set _aera cover percentage_ as a filter criteria. If user selects _yes_, then it will prompt the user set the minimum and maximum area cover percentage (range from 0 to 100)  
 4. Next, it will prompt the user to enter the _date range_ (in format yyyy-mm-dd)  
