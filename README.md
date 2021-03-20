@@ -1,5 +1,5 @@
 # Planet-wrapper
-A Python 3 wrapper of Planet API to search and download images
+A Python wrapper of Planet API to search and download images
 # Dependencies  
 This tool needs the following dependencies:  
 - planet  
