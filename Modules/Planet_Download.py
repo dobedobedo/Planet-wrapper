@@ -56,7 +56,7 @@ class OrderThread(Thread):
             Item_type = Item['properties']['item_type']
             Item_ID = Item['id']
             products[products_index[Item_type]]['item_ids'].append(Item_ID)
-            _Item_date[Item_ID] = datetime.fromisoformat(Item['properties']['acquired'].rstrip('Z'))
+            _Item_date[Item_ID] = datetime.strptime(Item['properties']['acquired'][:10], '%Y-%m-%d')
 
         self.Item_date = _Item_date
 
@@ -76,24 +76,34 @@ class OrderThread(Thread):
                                    data=json.dumps(order_request),
                                    auth=self.auth,
                                    headers=headers))
+        # Disable garbage collect to avoid crashing tkinter
+        if gc.isenabled():
+            gc.disable()
         while not pipeline.empty():
             order_response = pipeline.get()
         order_response_json = order_response.json()
-        order_id = order_response_json['id']
-        self.order_id = order_id
-        self.message = 'Creating order: {}'.format(order_id)
+        try:
+            order_id = order_response_json['id']
+            self.order_id = order_id
+            self.message = 'Creating order: {}'.format(order_id)
 
-        # Check the status of the order, and return the ID when it's ready for download
-        order_status = order_response_json['state']
-        while order_status not in ['success', 'failed', 'partial']:
-            pipeline.put(requests.get('{}/{}'.format(order_url, order_id), auth=self.auth))
-            while not pipeline.empty():
-                order_response = pipeline.get()
-            order_response_json = order_response.json()
+            # Check the status of the order, and return the ID when it's ready for download
             order_status = order_response_json['state']
-            # Check the status every 10 seconds
-            sleep(10)
-        self.result = order_response_json
+            while order_status not in ['success', 'failed', 'partial']:
+                pipeline.put(requests.get('{}/{}'.format(order_url, order_id), auth=self.auth))
+                while not pipeline.empty():
+                    order_response = pipeline.get()
+                order_response_json = order_response.json()
+                order_status = order_response_json['state']
+                # Check the status every 10 seconds
+                sleep(10)
+            self.result = order_response_json
+        except Exception:
+            message = list()
+            for i in order_response_json['genera']:
+                message.append(i['message'])
+            prompt_widget.ErrorBox('Something went wrong', '\n'.join(message))
+            sys.exit(0)
         
     # Cancel the order if the task is aborted.
     def Abort(self):
@@ -184,6 +194,8 @@ def main(API_KEY, _planet_result, selected_assets):
     # Create an order. Cancel the order if the task is aborted.
     task_thread = OrderThread(API_KEY, Avail_Items, selected_assets, delivery)
     order_response = prompt_widget.ProgressBar('indeterminate', task_thread, len(Avail_Items)-1, task_thread.Abort)
+
+    gc.collect()
 
     # End the application here if the delivery method is to cloud storage
     delivery_options = delivery.keys()
