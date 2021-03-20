@@ -16,6 +16,6 @@ For more information about planet API key, refer to https://support.planet.com/h
 1. Execute the script. The tool will prompt the user to select the search item types and asset types. For more details regarding the codename, refer to https://www.planet.com/docs/spec-sheets/.  
 2. An AOI is a must for this application. Three formats are supported at the moment: **Shapefile (\*.shp)**, **GeoJSON (\*.geojson; \*.json)**, and **KML (\*.kml)**. It can contains multiple _points_, _polygons_, and _features_.  
 3. The application will prompt the users for filter options. You can choose multiple filters, and it will prompt for search range later. If no filter is selected, it will automatically search for the latest six months images that touch the AOI.  
-4. It will report the search results. If it finds any, it will prompt the user for delivery options.  
+4. It will report the search results. If it finds any, it will prompt the user for delivery options. Refer to https://developers.planet.com/docs/orders/delivery/ for more information.  
   
 This application supports both GUI and CLI. If a display environment is not found, it will convert to CLI mode automatically.  
