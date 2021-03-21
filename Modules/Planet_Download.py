@@ -146,7 +146,7 @@ class DownloadThread(Thread):
                 if not self.archive:
                     # Create subdirectories based on the assets date
                     for Item_ID, date in self.Item_date.items():
-                        if filename.startswith(Item_ID)
+                        if filename.startswith(Item_ID):
                             assets_date = date
                             break
                     date_subfolder = assets_date.strftime('%Y-%m-%d')
