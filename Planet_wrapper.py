@@ -5,7 +5,6 @@ Created on Thu Apr  5 12:06:17 2018
 
 @author: uqytu1
 """
-import json
 from Modules import auth, Planet_Search, Planet_Request, Planet_Download
 
 if __name__ == '__main__':
