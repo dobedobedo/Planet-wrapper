@@ -14,7 +14,7 @@ The planet API needs the user's API key to access the service. Three authenticat
 For more information about planet API key, refer to https://support.planet.com/hc/en-us/articles/212318178-What-is-my-API-key-  
 # Usage  
 1. Execute the script. The tool will prompt the user to select the search item types and asset types. For more details regarding the codename, refer to https://developers.planet.com/docs/apis/data/items-assets/.  
-2. An AOI is a must for this application. Three formats are supported at the moment: **Shapefile (\*.shp)**, **GeoJSON (\*.geojson; \*.json)**, and **KML (\*.kml)**. It can contains multiple _points_, _polygons_, and _features_.  
+2. An AOI is a must for this application. Three formats are supported at the moment: **Shapefile (\*.shp)**, **GeoJSON (\*.geojson; \*.json)**, and **Keyhole Markup Language (\*.kml)**. It can contains multiple _points_, _polygons_, and _features_.  
 3. The application will prompt the users for filter options. You can choose multiple filters, and it will prompt for search range later. If no filter is selected, it will automatically search for the latest six months images that touch the AOI.  
 4. It will report the search results. If it finds any, it will prompt the user for delivery options. Refer to https://developers.planet.com/docs/orders/delivery/ for more information.  
   
