@@ -98,6 +98,7 @@ class OrderThread(Thread):
                 # Check the status every 10 seconds
                 sleep(10)
             self.result = order_response_json
+        # Report the message for any reason cause the order failed
         except Exception:
             message = list()
             for i in order_response_json['genera']:
@@ -145,9 +146,9 @@ class DownloadThread(Thread):
                 if not self.archive:
                     # Create subdirectories based on the assets date
                     for Item_ID, date in self.Item_date.items():
-                        filename.startswith(Item_ID)
-                        assets_date = date
-                        break
+                        if filename.startswith(Item_ID)
+                            assets_date = date
+                            break
                     date_subfolder = assets_date.strftime('%Y-%m-%d')
                     output_subdir = os.path.join(self.output_dir, date_subfolder)
                     
