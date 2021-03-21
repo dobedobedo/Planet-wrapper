@@ -101,7 +101,7 @@ class OrderThread(Thread):
         # Report the message for any reason cause the order failed
         except Exception:
             message = list()
-            for i in order_response_json['genera']:
+            for i in order_response_json['general']:
                 message.append(i['message'])
             prompt_widget.ErrorBox('Something went wrong', '\n'.join(message))
             sys.exit(0)
