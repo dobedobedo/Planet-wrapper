@@ -751,6 +751,8 @@ def DeliveryBox():
             self.single_archive_selected = tk.IntVar(self, name='single_archive_selected')
             self.single_archive = tk.StringVar(self, name='single_archive')
             self.single_archive.set('{}')
+            self.overwrite = tk.IntVar(self, name='overwrite')
+            self.overwrite.set(0)
             
             self.amz_s3 = tk.IntVar(self, name='amz_s3')
             self.amz_s3_keyid = tk.StringVar(self, name='amz_s3_keyid')
@@ -775,7 +777,7 @@ def DeliveryBox():
 
             # Frame for location drive download option
             self.Local_frame = ttk.Frame(self)
-            self.Local_frame.columnconfigure(0, weight=1)
+            #self.Local_frame.columnconfigure(0, weight=1)
             self.Local_frame.rowconfigure(0, weight=49)
             self.Local_frame.rowconfigure(1, weight=50)
 
@@ -913,7 +915,7 @@ def DeliveryBox():
             self.goo_cs_frame.grid(column=2, row=3)
 
             # Draw the cloud frame
-            self.Cloud_frame.grid(column=0, row=0, sticky='nsew')
+            self.Cloud_frame.grid(column=0, row=0, padx=5, sticky='nsew')
 
             # Disable all widget at the begining
             self.set_CloudFrame(self.amz_s3.get(), self.amz_s3_option_frame.winfo_children())
@@ -924,26 +926,38 @@ def DeliveryBox():
             self.delivery_method_frame = ttk.LabelFrame(self, text='Delivery methods')
             ttk. Radiobutton(
                 self.delivery_method_frame,
-                text='Local drive',
+                text='{:<23}'.format('Local drive'),
                 value=0,
                 variable=self.delivery_method,
                 command=self.change_frame).grid(column=0, row=0, padx=50, pady=5)
             ttk.Radiobutton(
                 self.delivery_method_frame,
-                text='Cloud storage',
+                text='{:<23}'.format('Cloud storage'),
                 value=1,
                 variable=self.delivery_method,
                 command=self.change_frame).grid(column=1, row=0, padx=50, pady=5)
 
             self.delivery_method_frame.grid(column=0, row=1, padx=5, pady=5, sticky='ew')
 
+            # Other option frame
+            self.other_frame = ttk.Frame(self)
+
             # Single archive option
-            self.single_archive_chkbox = ttk.Checkbutton(self,
+            self.single_archive_chkbox = ttk.Checkbutton(self.other_frame,
                                                          text='Deliver in a single archive',
                                                          variable=self.single_archive_selected,
                                                          onvalue=1, offvalue=0,
                                                          command=self.set_single_archive)
-            self.single_archive_chkbox.grid(column=0, row=2, padx=5, pady=5)
+            self.single_archive_chkbox.grid(column=0, row=0, padx=50, pady=5)
+
+            # Overwrite option
+            self.overwrite_chkbox = ttk.Checkbutton(self.other_frame,
+                                                    text='Overwrite existing files',
+                                                    variable=self.overwrite,
+                                                    onvalue=1, offvalue=0)
+            self.overwrite_chkbox.grid(column=1, row=0, padx=50, pady=5)
+
+            self.other_frame.grid(column=0, row=2, sticky='ew')
 
             # OK button
             self.OK_button = ttk.Button(self, text='OK')
@@ -1091,6 +1105,7 @@ def DeliveryBox():
         Delivery.mainloop()
         destination = Delivery.getvar(name='destination')
         delivery_option = json.loads(Delivery.getvar(name='delivery_option'))
+        overwrite = bool(Delivery.getvar(name='overwrite'))
         CleanWidget(Delivery)
         Delivery.destroy()
         Delivery = None
@@ -1189,8 +1204,21 @@ def DeliveryBox():
             delivery_option['archive_type'] = 'zip'
             delivery_option['single_archive'] = True
             delivery_option['archive_filename'] = '{{name}}_{{order_id}}.zip'
+
+        print('Do you want to overwrite existing file?')
+        correct_answers = ['yes', 'y', 'no', 'n']
+        while True:
+            user_answer = input('(yes/no)? >>> ')
+            if user_answer.lower() in correct_answers:
+                break
+            print('Can\'t recognise input. Please try again.')
+
+        if user_answer.lower() == 'yes' or user_answer == 'y':
+            overwrite = True
+        else:
+            overwrite = False
                 
-    return destination, delivery_option
+    return destination, delivery_option, overwrite
     
 def User_Confirm(title, question):
     try:
