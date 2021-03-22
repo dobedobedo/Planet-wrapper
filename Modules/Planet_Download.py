@@ -15,6 +15,7 @@ from datetime import datetime
 import json
 import requests
 from requests.auth import HTTPBasicAuth
+import sys
 from . import prompt_widget
 from .__init__ import _planet_url
 
@@ -30,9 +31,12 @@ class OrderThread(Thread):
         self.order_id = ''
         self.Item_date = None
         self.max_message_length = 60
-        self.message = 'Creating order'
-        self.progress = 0
-        self.result = None
+        self.message = queue.Queue()
+        self.message.put('Creating order')
+        self.progress = queue.Queue()
+        self.progress.put(0)
+        self.result = queue.Queue()
+        self.result.put(None)
 
     def run(self):
         # Use order API to download the order
@@ -76,34 +80,34 @@ class OrderThread(Thread):
                                    data=json.dumps(order_request),
                                    auth=self.auth,
                                    headers=headers))
-        # Disable garbage collect to avoid crashing tkinter
-        if gc.isenabled():
-            gc.disable()
+        
         while not pipeline.empty():
             order_response = pipeline.get()
+        
         order_response_json = order_response.json()
         try:
             order_id = order_response_json['id']
             self.order_id = order_id
-            self.message = 'Creating order: {}'.format(order_id)
+            if self.message.empty():
+                self.message.put('Creating order: {}'.format(order_id))
 
-            # Check the status of the order, and return the ID when it's ready for download
+            # Check the status of the order 1 minute later, and return the response when it's ready for download
             order_status = order_response_json['state']
+
+            sleep(60)
             while order_status not in ['success', 'failed', 'partial']:
                 pipeline.put(requests.get('{}/{}'.format(order_url, order_id), auth=self.auth))
                 while not pipeline.empty():
                     order_response = pipeline.get()
                 order_response_json = order_response.json()
                 order_status = order_response_json['state']
-                # Check the status every 10 seconds
+                # Check the status every 5 minutes
                 sleep(10)
-            self.result = order_response_json
+            if self.result.empty():
+                self.result.put(order_response_json)
         # Report the message for any reason cause the order failed
-        except Exception:
-            message = list()
-            for i in order_response_json['general']:
-                message.append(i['message'])
-            prompt_widget.ErrorBox('Something went wrong', '\n'.join(message))
+        except Exception as Error:
+            prompt_widget.ErrorBox('Something went wrong', Error)
             sys.exit(0)
         
     # Cancel the order if the task is aborted.
@@ -128,9 +132,12 @@ class DownloadThread(Thread):
         longest_filename = max([r['name'].split('/')[-1] for r in self.downloads], key=len)
         
         self.max_message_length = max([len(longest_filename), len(order_response['id'])+13]) + 15
-        self.message = '{:<{width}}'.format('Initialising', width=self.max_message_length)
-        self.progress = 0
-        self.result = None
+        self.message = queue.Queue()
+        self.message.put('{:<{width}}'.format('Initialising', width=self.max_message_length))
+        self.progress = queue.Queue()
+        self.progress.put(0)
+        self.result = queue.Queue()
+        self.result.put(None)
 
     def run(self):
         results_urls = [r['location'] for r in self.downloads]
@@ -138,6 +145,7 @@ class DownloadThread(Thread):
         
 
         for url, name in zip(results_urls, results_names):
+            progress_counter = 0
             filename = name.split('/')[-1]
             if filename == 'manifest.json':
                 filename = '{}_manifest.json'.format(self.order_response['id'])
@@ -169,11 +177,11 @@ class DownloadThread(Thread):
                         
             output_file = os.path.join(output_subdir, filename)
             if self.overwrite or not os.path.exists(output_file):
-                self.message = '{:<{width}}'.format('Downloading {}'.format(filename), width=self.max_message_length)
+                if self.message.empty():
+                    self.message.put('{:<{width}}'.format('Downloading {}'.format(filename), width=self.max_message_length))
+
                 download_response = requests.get(url, allow_redirects=True, auth=self.auth)
-                # Disable automatic garbage collection to avoid crashing tkinter
-                if gc.isenabled():
-                    gc.disable()
+
                 with open(output_file, 'wb') as f:
                     pipeline = queue.Queue()
                     pipeline.put(download_response.content)
@@ -181,9 +189,12 @@ class DownloadThread(Thread):
                         f.write(pipeline.get())
                 f = None
             else:
-                self.message = 'Skipping {:<{width}}'.format(filename, width=self.max_message_length)
+                if self.message.empty():
+                    self.message.put('Skipping {:<{width}}'.format(filename, width=self.max_message_length))
 
-            self.progress += 1
+            progress_counter += 1
+            if self.progress.empty():
+                self.progress.put(progress_counter)
 
 def main(API_KEY, _planet_result, selected_assets):
     # List available Planet items
@@ -192,9 +203,23 @@ def main(API_KEY, _planet_result, selected_assets):
     # Ask the user to select the delivery method
     output_dir, delivery = prompt_widget.DeliveryBox()
 
+    # Disable automatic garbage collect to avoid crashing tkinter
+    if gc.isenabled():
+        gc.disable()
+            
     # Create an order. Cancel the order if the task is aborted.
     task_thread = OrderThread(API_KEY, Avail_Items, selected_assets, delivery)
     order_response = prompt_widget.ProgressBar('indeterminate', task_thread, len(Avail_Items)-1, task_thread.Abort)
+
+    # Get the date information to respective items
+    Item_date = task_thread.Item_date
+
+    # Clean up
+    task_thread = None
+
+    # Temporary enable automatic garbage collect
+    if not gc.isenabled():
+        gc.enable()
 
     gc.collect()
 
@@ -204,8 +229,6 @@ def main(API_KEY, _planet_result, selected_assets):
         prompt_widget.InfoBox('Done', 'Check your cloud storage for the delivery progress')
         sys.exit(0)
 
-    Item_date = task_thread.Item_date
-
     # Count available assets
     _assets_count = len(order_response['_links']['results'])
 
@@ -213,6 +236,10 @@ def main(API_KEY, _planet_result, selected_assets):
     def do_nothing():
         pass
 
+    # Disable automatic garbage collection to avoid crashing tkinter
+    if gc.isenabled():
+        gc.disable()
+                    
     # Check if the download is a single archive
     if 'single_archive' in delivery_options:
         task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir, archive=True)
@@ -222,5 +249,8 @@ def main(API_KEY, _planet_result, selected_assets):
         task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir)
         
     prompt_widget.ProgressBar('determinate', task_thread, _assets_count-1, do_nothing)
+
+    # Clean up
+    task_thread = None
     gc.collect()
     

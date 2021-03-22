@@ -7,6 +7,8 @@ Created on Tue Apr 10 11:08:07 2018
 
 from planet import api
 from threading import Thread
+import queue
+import gc
 from time import sleep
 import sys
 from . import prompt_widget
@@ -26,9 +28,12 @@ class InitialiseAssetsThread(Thread):
         
         self.Items = list(_Items_assets.keys())
         self.max_message_length = len(max(self.Items, key=len)) + 31
-        self.message = '{0:<{width}}'.format('Initialising...', width=self.max_message_length)
-        self.progress = 0
-        self.result = None
+        self.message = queue.Queue()
+        self.message.put('{0:<{width}}'.format('Initialising...', width=self.max_message_length))
+        self.progress = queue.Queue()
+        self.progress.put(0)
+        self.result = queue.Queue()
+        self.result.put(None)
 
     def run(self):
         # Check authentication
@@ -50,20 +55,21 @@ class InitialiseAssetsThread(Thread):
             except Exception as Other_Errors:
                 prompt_widget.ErrorBox('Something went wrong',
                                        '{}\nPlease try again later.'.format(Other_Errors))
-                self.join()
                 sys.exit(0)
-            
-            self.message = '{0:<{width}}'.format('Checking the permission of {} ...'.format(Item),
-                                                 width=self.max_message_length)
-            self.progress = _index
+            if self.message.empty():
+                self.message.put('{0:<{width}}'.format('Checking the permission of {} ...'.format(Item),
+                                                       width=self.max_message_length))
+            if self.progress.empty():
+                self.progress.put(_index)
             if len(_result_json['features']) > 0:
                 # Add available assets to respective items
                 Items_asset[Item] = _Items_assets[Item]
 
             # # Wait for 1 second after each request to avoid exceeding the request limit
             sleep(1)
-        
-        self.result = Items_asset
+
+        if self.result.empty():
+            self.result.put(Items_asset)
 
 def main():
     # Check authentication
@@ -73,8 +79,21 @@ def main():
     def do_nothing():
         pass
     
+    # Disable automatic garbage collect to avoid crashing tkinter
+    if gc.isenabled():
+        gc.disable()
+        
     # Initialise assets list
     task_thread = InitialiseAssetsThread(_Items_assets)
     Avail_Items = prompt_widget.ProgressBar('determinate', task_thread, len(_Items_assets)-1, do_nothing)
+
+    # Clean up
+    task_thread = None
+
+    # Temporary enable automatic garbage collect
+    if not gc.isenabled():
+        gc.enable()
+
+    gc.collect()
 
     return API_KEY, Avail_Items

@@ -11,6 +11,7 @@ from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
 from tkinter import ttk
 import os
 import sys
+import gc
 import getpass
 import json
 from threading import Thread
@@ -18,6 +19,16 @@ from time import sleep
 from datetime import datetime, timedelta
 import webbrowser
 from planet import api
+
+def CleanWidget(parent):
+    # This function tries to clean all the widgets to avoid garbages
+    for child in parent.winfo_children():
+        wtype = child.winfo_class()
+        if wtype in ('TFrame', 'TLabelframe'):
+            CleanWidget(child)
+            child = None
+        else:
+            child = None
 
 def AuthInputBox():
     class GetAPIKey:
@@ -192,8 +203,11 @@ def AuthInputBox():
         Auth = App()
         ControlFrame(Auth)
         Auth.mainloop()
+        API_KEY = Auth.getvar(name='API_KEY')
+        CleanWidget(Auth)
         Auth.destroy()
-        return Auth.getvar(name='API_KEY')
+        Auth = None
+        gc.collect()
     
     except tk._tkinter.TclError:
         print('Couldn\'t find Planet API Key.')
@@ -221,7 +235,7 @@ def AuthInputBox():
                     print('Authentication failed!: Invalid API Key')
                 except requests.exceptions.InvalidHeader:
                     print('Authentication failed!: Invalid return character')
-        return API_KEY
+    return API_KEY
 
 def RangeInputBox(_property, Input_Min, Input_Max):
     class popupWindow(tk.Tk):
@@ -316,8 +330,12 @@ def RangeInputBox(_property, Input_Min, Input_Max):
     try:
         InputBox = popupWindow(_property, Input_Min, Input_Max)
         InputBox.mainloop()
+        Min = InputBox.minrange
+        Max = InputBox.maxrange
+        CleanWidget(InputBox)
         InputBox.destroy()
-        return InputBox.minrange, InputBox.maxrange
+        InputBox = None
+        gc.collect()
 
     except tk._tkinter.TclError:
         print('Please enter the desired {} ({}-{})'.format(_property, Input_Min, Input_Max))
@@ -339,7 +357,7 @@ def RangeInputBox(_property, Input_Min, Input_Max):
             except ValueError:
                 print('Error!: You must input numbers\n')
 
-        return Min, Max
+    return Min, Max
 
 def DateInputBox():        
     class popupWindow(tk.Tk):
@@ -428,8 +446,12 @@ def DateInputBox():
     try:
         InputDate = popupWindow()
         InputDate.mainloop()
+        StartDate = InputDate.start
+        EndDate = InputDate.end
+        CleanWidget(InputDate)
         InputDate.destroy()
-        return InputDate.start, InputDate.end
+        InputDate = None
+        gc.collect()
     
     except tk._tkinter.TclError:
         print('Please enter the desired date')
@@ -457,7 +479,7 @@ def DateInputBox():
             except ValueError:
                 print('Wrong value!: Make sure the input are valid dates and follow the format yyyy-mm-dd')
 
-        return StartDate, EndDate
+    return StartDate, EndDate
 
 def CheckBox(picks, text, *URL, additional_info=False, allow_none=False):
     class checkboxfromlist(ttk.Frame):
@@ -543,11 +565,16 @@ def CheckBox(picks, text, *URL, additional_info=False, allow_none=False):
     try:
         App = MainWindow(picks, text, *URL, additional_info=additional_info, allow_none=allow_none)
         App.mainloop()
+        result = App.result
+        CleanWidget(App)
         App.destroy()
-        return App.result
+        App = None
+        gc.collect()
     
     except tk._tkinter.TclError:
-        return PromptUserMultipleSelect(picks, text, *URL, additional_info=additional_info, allow_none=allow_none)
+        result = PromptUserMultipleSelect(picks, text, *URL, additional_info=additional_info, allow_none=allow_none)
+
+    return result
 
 def ProgressBar(mode, task_thread, _max, Abort_command):
     # GUI progress bar
@@ -590,7 +617,8 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
 
             # Monitor the progress
             self.monitor(task_thread)
-            self.result = task_thread.result
+            while not task_thread.result.empty():
+                self.result = task_thread.result.get()
 
         def on_exit(self):
             # When you click x to exit, this function is called
@@ -604,14 +632,18 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
         def monitor(self, task_thread):
             if task_thread.is_alive():
                 # Update progress every 0.5 second
+                # We get the variable from working thread with Queue method
                 self.after(500, lambda: self.monitor(task_thread))
                 if mode == 'determinate':
-                    self.pb['value'] = task_thread.progress
-                self.Label['text'] = task_thread.message
+                    while not task_thread.progress.empty():
+                        self.pb['value'] = task_thread.progress.get()
+                while not task_thread.message.empty():
+                    self.Label['text'] = task_thread.message.get()
             else:
                 task_thread.join()
                 self.pb.stop()
-                self.result = task_thread.result
+                while not task_thread.result.empty():
+                    self.result = task_thread.result.get()
                 self.quit()
 
     # CLI progress bar
@@ -623,10 +655,10 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
             self.max_message_length = task_thread.max_message_length
             self.terminal_size = os.get_terminal_size().columns
             self.length = self.terminal_size - self.max_message_length - 10
-            self.progress = task_thread.progress
-            self.message = task_thread.message
+            self.progress = task_thread.progress.get()
+            self.message = task_thread.message.get()
             self.print_message = ''
-            self.result = task_thread.result
+            self.result = task_thread.result.get()
 
         def run(self):
             try:
@@ -655,7 +687,8 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
                     print('{:<{width}}'.format(self.print_message, width=self.terminal_size))
                 elif mode == 'indeterminate':
                     print('{:<{width}}'.format('Done', width=self.terminal_size))
-                self.result = task_thread.result
+                while not task_thread.result.empty():
+                    self.result = task_thread.result.get()
             except KeyboardInterrupt:
                 print('Abort! Exit the program.')
                 Abort_command()
@@ -663,8 +696,10 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
                 sys.exit(0)
             
         def monitor(self, task_thread):
-            self.progress = task_thread.progress
-            self.message = task_thread.message
+            while not task_thread.progress.empty():
+                self.progress = task_thread.progress.get()
+            while not task_thread.message.empty():
+                self.message = task_thread.message
 
         def PrintProgress(self, _max):
             percent = '{0:>4.0%}'.format(float(self.progress/_max))
@@ -677,14 +712,20 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
     try:
         ProgressBar = GUIApp(mode, task_thread, _max, Abort_command)
         ProgressBar.mainloop()
+        result = ProgressBar.result
+        CleanWidget(ProgressBar)
         ProgressBar.destroy()
         
     except tk._tkinter.TclError:
         ProgressBar = CLIApp(mode, task_thread, _max, Abort_command)
         ProgressBar.start()
         ProgressBar.join()
+        result = ProgressBar.result
+        
+    ProgressBar = None
+    gc.collect()
 
-    return ProgressBar.result
+    return result
 
 def DeliveryBox():
     class App(tk.Tk):
@@ -1048,8 +1089,12 @@ def DeliveryBox():
     try:
         Delivery = App()
         Delivery.mainloop()
+        destination = Delivery.getvar(name='destination')
+        delivery_option = json.loads(Delivery.getvar(name='delivery_option'))
+        CleanWidget(Delivery)
         Delivery.destroy()
-        return Delivery.getvar(name='destination'), json.loads(Delivery.getvar(name='delivery_option'))
+        Delivery = None
+        gc.collect()
     
     except tk._tkinter.TclError:
         cloud_options = {'Amazon S3': [{'aws_access_key_id': 'AWS access key ID: '},
@@ -1145,7 +1190,7 @@ def DeliveryBox():
             delivery_option['single_archive'] = True
             delivery_option['archive_filename'] = '{{name}}_{{order_id}}.zip'
                 
-        return destination, delivery_option
+    return destination, delivery_option
     
 def User_Confirm(title, question):
     try:
@@ -1209,6 +1254,7 @@ def AskDirectory(title):
         root.destroy()
     except tk._tkinter.TclError:
         directory = input('{}: '.format(title))
+        
     return directory
 
 def ParseInputNumbers(selects):
