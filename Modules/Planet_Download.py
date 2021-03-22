@@ -131,7 +131,7 @@ class DownloadThread(Thread):
         
         longest_filename = max([r['name'].split('/')[-1] for r in self.downloads], key=len)
         
-        self.max_message_length = max([len(longest_filename), len(order_response['id'])+13]) + 15
+        self.max_message_length = max([len(longest_filename), len(order_response['id'])+13]) + 20
         self.message = queue.Queue()
         self.message.put('{:<{width}}'.format('Initialising', width=self.max_message_length))
         self.progress = queue.Queue()
@@ -211,7 +211,7 @@ def main(API_KEY, _planet_result, selected_assets):
     Avail_Items = _planet_result['features']
 
     # Ask the user to select the delivery method
-    output_dir, delivery = prompt_widget.DeliveryBox()
+    output_dir, delivery, overwrite = prompt_widget.DeliveryBox()
 
     # Disable automatic garbage collect to avoid crashing tkinter
     if gc.isenabled():
@@ -252,11 +252,11 @@ def main(API_KEY, _planet_result, selected_assets):
                     
     # Check if the download is a single archive
     if 'single_archive' in delivery_options:
-        task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir, archive=True)
+        task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir, archive=True, overwrite=overwrite)
 
     else:
     # Download the assets separatedly
-        task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir)
+        task_thread = DownloadThread(API_KEY, Item_date, order_response, output_dir, overwrite=overwrite)
         
     prompt_widget.ProgressBar('determinate', task_thread, _assets_count-1, do_nothing)
 
