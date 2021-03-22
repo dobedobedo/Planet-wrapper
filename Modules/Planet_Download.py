@@ -131,7 +131,7 @@ class DownloadThread(Thread):
         
         longest_filename = max([r['name'].split('/')[-1] for r in self.downloads], key=len)
         
-        self.max_message_length = max([len(longest_filename), len(order_response['id'])+13], key=len) + 15
+        self.max_message_length = max([len(longest_filename), len(order_response['id'])+13]) + 15
         self.message = queue.Queue()
         self.message.put('{:<{width}}'.format('Initialising', width=self.max_message_length))
         self.progress = queue.Queue()
