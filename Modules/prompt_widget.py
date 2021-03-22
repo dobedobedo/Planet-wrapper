@@ -777,7 +777,7 @@ def DeliveryBox():
 
             # Frame for location drive download option
             self.Local_frame = ttk.Frame(self)
-            #self.Local_frame.columnconfigure(0, weight=1)
+            self.Local_frame.columnconfigure(0, weight=1)
             self.Local_frame.rowconfigure(0, weight=49)
             self.Local_frame.rowconfigure(1, weight=50)
 
