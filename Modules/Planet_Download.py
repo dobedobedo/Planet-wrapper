@@ -177,17 +177,25 @@ class DownloadThread(Thread):
                         
             output_file = os.path.join(output_subdir, filename)
             if self.overwrite or not os.path.exists(output_file):
-                if self.message.empty():
-                    self.message.put('{:<{width}}'.format('Downloading {}'.format(filename), width=self.max_message_length))
+                try:
+                    if self.message.empty():
+                        self.message.put('{:<{width}}'.format('Downloading {}'.format(filename), width=self.max_message_length))
 
-                download_response = requests.get(url, allow_redirects=True, auth=self.auth)
+                    download_response = requests.get(url, allow_redirects=True, auth=self.auth)
 
-                with open(output_file, 'wb') as f:
-                    pipeline = queue.Queue()
-                    pipeline.put(download_response.content)
-                    while not pipeline.empty():
-                        f.write(pipeline.get())
-                f = None
+                    with open(output_file, 'wb') as f:
+                        pipeline = queue.Queue()
+                        pipeline.put(download_response.content)
+                        while not pipeline.empty():
+                            f.write(pipeline.get())
+                    f = None
+
+                    gc.collect()
+                    
+                # Report the message for any reason cause the download failed
+                except Exception as Error:
+                    prompt_widget.ErrorBox('Something went wrong', Error)
+                    sys.exit(0)
             else:
                 if self.message.empty():
                     self.message.put('Skipping {:<{width}}'.format(filename, width=self.max_message_length))
