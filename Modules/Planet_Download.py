@@ -102,7 +102,7 @@ class OrderThread(Thread):
                 order_response_json = order_response.json()
                 order_status = order_response_json['state']
                 # Check the status every 5 minutes
-                sleep(10)
+                sleep(300)
             if self.result.empty():
                 self.result.put(order_response_json)
         # Report the message for any reason cause the order failed
@@ -203,6 +203,9 @@ class DownloadThread(Thread):
             progress_counter += 1
             if self.progress.empty():
                 self.progress.put(progress_counter)
+
+            # Wait for 5 second between each request
+            sleep(5)
 
 def main(API_KEY, _planet_result, selected_assets):
     # List available Planet items
