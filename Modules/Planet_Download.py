@@ -143,9 +143,8 @@ class DownloadThread(Thread):
         results_urls = [r['location'] for r in self.downloads]
         results_names = [r['name'] for r in self.downloads]
         
-
+        progress_counter = 0
         for url, name in zip(results_urls, results_names):
-            progress_counter = 0
             filename = name.split('/')[-1]
             if filename == 'manifest.json':
                 filename = '{}_manifest.json'.format(self.order_response['id'])
