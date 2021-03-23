@@ -648,7 +648,7 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
 
     # CLI progress bar
     class CLIApp(Thread):
-        def __init__(self, mode, task_thread, _max, Abort_command):
+        def __init__(self, mode, task_thread, _max, Abort_command, daemon=True):
             super().__init__()
 
             # Initialise parameters
