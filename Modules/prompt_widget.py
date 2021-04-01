@@ -623,8 +623,8 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
         def on_exit(self):
             # When you click x to exit, this function is called
             if askyesno("Exit", "Do you want to quit the application?"):
-                self.destroy()
                 Abort_command()
+                self.destroy()
                 task_thread.join()
                 sys.exit(0)
 
