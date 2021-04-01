@@ -95,7 +95,7 @@ class OrderThread(Thread):
             order_status = order_response_json['state']
 
             sleep(60)
-            while order_status not in ['success', 'failed', 'partial']:
+            while order_status not in ['success', 'failed', 'partial', 'cancelled']:
                 pipeline.put(requests.get('{}/{}'.format(order_url, order_id), auth=self.auth))
                 while not pipeline.empty():
                     order_response = pipeline.get()
