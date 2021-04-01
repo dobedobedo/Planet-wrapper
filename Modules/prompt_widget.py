@@ -699,7 +699,7 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
             while not task_thread.progress.empty():
                 self.progress = task_thread.progress.get()
             while not task_thread.message.empty():
-                self.message = task_thread.message
+                self.message = task_thread.message.get()
 
         def PrintProgress(self, _max):
             percent = '{0:>4.0%}'.format(float(self.progress/_max))
