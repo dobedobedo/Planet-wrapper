@@ -171,7 +171,7 @@ def AuthInputBox():
 
             # Radio buttons of login methods
             self.selected_value = tk.IntVar()
-            ttk. Radiobutton(
+            ttk.Radiobutton(
                 self,
                 text='email and password',
                 value=0,
@@ -212,7 +212,7 @@ def AuthInputBox():
     except tk._tkinter.TclError:
         print('Couldn\'t find Planet API Key.')
         login_method = PromptUserSingleSelect(['email', 'API Key'],
-                                                'Please select the  method you want to proceed.')
+                                                'Please select the method you want to proceed.')
         if login_method == 'email':
             while True:
                 email = input('Your planet account: ')
@@ -924,7 +924,7 @@ def DeliveryBox():
 
             # Set the control frame
             self.delivery_method_frame = ttk.LabelFrame(self, text='Delivery methods')
-            ttk. Radiobutton(
+            ttk.Radiobutton(
                 self.delivery_method_frame,
                 text='{:<23}'.format('Local drive'),
                 value=0,
