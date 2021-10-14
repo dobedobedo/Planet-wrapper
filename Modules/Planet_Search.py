@@ -31,9 +31,16 @@ def main(Avail_Items):
         for item in Unwanted_Items:
             Avail_Items.pop(item)
     
-    # Ask the user to select items and assets for download
-    selected_items = prompt_widget.CheckBox(list(Avail_Items.keys()), 'Please select desired download item',
-                                            'https://developers.planet.com/docs/apis/data/items-assets/', additional_info=True)
+    try:
+        # Ask the user to select items and assets for download
+        selected_items = prompt_widget.CheckBox(list(Avail_Items.keys()), 'Please select desired download item',
+                                                'https://developers.planet.com/docs/apis/data/items-assets/', additional_info=True)
+
+    except ValueError:
+        # Quit if there is no other items available
+        prompt_widget.InfoBox('Abort', 'No available items are detected')
+        sys.exit(0)
+
     selected_assets = dict()
     for selected_item in selected_items:
         selected_assets[selected_item] = prompt_widget.CheckBox(
