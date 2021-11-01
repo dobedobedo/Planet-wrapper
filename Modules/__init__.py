@@ -10,7 +10,11 @@ __all__ = ['auth', 'Planet_Search', 'Planet_Request', 'Planet_Download']
 
 # Define Item ans assets for downloadable planet images
 # This is the complete list
-__Items_assets = {'PSScene3Band': ['analytic', 'analytic_dn', 'analytic_dn_xml', 'analytic_xml',
+__Items_assets = {'PSScene': ['ortho_analytic_4b', 'ortho_analytic_8b', 'ortho_analytic_8b_sr', 'ortho_analytic_8b_xml', 
+                              'ortho_analytic_4b_sr', 'ortho_analytic_4b_xml', 'basic_analytic_4b', 'basic_analytic_8b', 
+                              'basic_analytic_8b_xml', 'basic_analytic_4b_rpc', 'basic_analytic_4b_xml', 
+                              'basic_udm2', 'ortho_udm2', 'ortho_visual'], 
+                  'PSScene3Band': ['analytic', 'analytic_dn', 'analytic_dn_xml', 'analytic_xml',
                                    'basic_analytic', 'basic_analytic_dn', 'basic_analytic_dn_rpc',
                                    'basic_analytic_dn_xml', 'basic_analytic_rpc', 'basic_analytic_xml',
                                    'basic_udm', 'basic_udm2', 'udm', 'udm2',
@@ -51,7 +55,10 @@ __Items_assets = {'PSScene3Band': ['analytic', 'analytic_dn', 'analytic_dn_xml',
                                    'metadata_aux', 'visual']}
 
 # This doesn't incldue XML and UDM as we're going to download them in a bundle with respective assets anyway
-_Items_assets = {'PSScene3Band': ['analytic', 'analytic_dn', 'basic_analytic', 'basic_analytic_dn', 'basic_analytic_dn_rpc',
+_Items_assets = {'PSScene': ['ortho_analytic_4b', 'ortho_analytic_8b', 'ortho_analytic_8b_sr', 
+                             'ortho_analytic_4b_sr', 'basic_analytic_4b', 'basic_analytic_8b', 
+                             'basic_analytic_4b_rpc', 'basic_udm2', 'ortho_udm2', 'ortho_visual'], 
+                 'PSScene3Band': ['analytic', 'analytic_dn', 'basic_analytic', 'basic_analytic_dn', 'basic_analytic_dn_rpc',
                                   'basic_analytic_dn_xml', 'basic_analytic_rpc', 'basic_udm2', 'udm2', 'visual'],
                  'PSScene4Band': ['analytic', 'analytic_dn', 'analytic_sr', 'basic_analytic', 'basic_analytic_dn', 'basic_analytic_dn_nitf',
                                   'basic_analytic_dn_rpc', 'basic_analytic_dn_rpc_nitf', 'basic_analytic_dn_xml_nitf', 'basic_analytic_nitf',
@@ -86,7 +93,8 @@ _planet_url =  {'data': 'https://api.planet.com/data/v1',
 # Define the support input AOI format
 _AOI_filetype = [('Shapefile', ['*.shp', '*.SHP', '*.Shp']), 
                  ('GeoJSON', ['*.geojson', '*.GEOJSON', '*.json', '*.JSON']),
-                 ('Keyhole Markup Language', ['*.kml', '*.KML'])]
+                 ('Keyhole Markup Language', ['*.kml', '*.KML']), 
+                 ('GeoPackage', ['*.gpkg', '*.GPKG'])]
 
 # Define the filter options
 _filter_properties = {'Date': {'type': 'Date',
