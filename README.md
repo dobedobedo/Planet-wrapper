@@ -22,3 +22,5 @@ This application supports both GUI and CLI. If a display environment is not foun
   
 # Known issue  
 Sometimes the GUI crashes because of threading issue. If this problem persist, open **Modules/prompt_widget.py** and go to **line 712**, insert a new line then input `raise tk._tkinter.TclError` to force using CLI progressbar.  
+  
+The PSScene item is still not downloadable at the time this program created. It just shows "Bad bundle type" to all of my request with all types of assets. Please let me know if it starts to work.
