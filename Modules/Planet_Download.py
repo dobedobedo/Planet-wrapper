@@ -107,7 +107,8 @@ class OrderThread(Thread):
                 self.result.put(order_response_json)
         # Report the message for any reason cause the order failed
         except Exception as Error:
-            prompt_widget.ErrorBox('Something went wrong', Error)
+            prompt_widget.ErrorBox(f'Error: {oder_response.status_code}', 
+                                   f"{order_response_json['general'][0]['message']}\n{order_response_json['field']['Products'][0]['message']}")
             sys.exit(0)
         
     # Cancel the order if the task is aborted.
