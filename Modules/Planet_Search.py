@@ -34,7 +34,7 @@ def main(Avail_Items):
     try:
         # Ask the user to select items and assets for download
         selected_items = prompt_widget.CheckBox(list(Avail_Items.keys()), 'Please select desired download item',
-                                                'https://developers.planet.com/docs/apis/data/items-assets/', additional_info=True)
+                                                'https://developers.planet.com/docs/orders/product-bundles-reference/', additional_info=True)
 
     except ValueError:
         # Quit if there is no other items available
