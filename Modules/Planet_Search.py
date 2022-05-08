@@ -34,7 +34,7 @@ def main(Avail_Items):
     try:
         # Ask the user to select items and assets for download
         selected_items = prompt_widget.CheckBox(list(Avail_Items.keys()), 'Please select desired download item',
-                                                'https://developers.planet.com/docs/orders/product-bundles-reference/', additional_info=True)
+                                                'https://developers.planet.com/docs/apis/data/items-assets/', additional_info=True)
 
     except ValueError:
         # Quit if there is no other items available
@@ -44,8 +44,8 @@ def main(Avail_Items):
     selected_assets = dict()
     for selected_item in selected_items:
         selected_assets[selected_item] = prompt_widget.CheckBox(
-                Avail_Items[selected_item], 'Please select desired download asset for {}'.format(selected_item),
-                'https://developers.planet.com/docs/apis/data/items-assets/', additional_info=True)
+                Avail_Items[selected_item], 'Please select desired product bundles for {}'.format(selected_item),
+                'https://developers.planet.com/docs/orders/product-bundles-reference/', additional_info=True)
     
     # Ask user input and output file names
     AOI = prompt_widget.AskOpenFile('Input a file containing the area of interest', 
