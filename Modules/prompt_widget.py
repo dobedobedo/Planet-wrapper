@@ -6,9 +6,11 @@ Created on Wed Apr  4 13:54:30 2018
 """
 
 import tkinter as tk
+from tkinter.font import Font
 from tkinter.filedialog import askopenfilename, askdirectory
 from tkinter.messagebox import showerror, showinfo, askyesno, askquestion
 from tkinter import ttk
+from tkinter.ttk import Style
 import os
 import sys
 import gc
@@ -55,6 +57,16 @@ def AuthInputBox():
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TEntry', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
 
         def on_exit(self):
         # When you click x to exit, this function is called
@@ -285,6 +297,16 @@ def RangeInputBox(_property, Input_Min, Input_Max):
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TEntry', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
         
         def on_exit(self):
         # When you click x to exit, this function is called
@@ -405,6 +427,16 @@ def DateInputBox():
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TEntry', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
         
         def on_exit(self):
         # When you click x to exit, this function is called
@@ -541,6 +573,16 @@ def CheckBox(picks, text, *URL, additional_info=False, allow_none=False):
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TCheckbutton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
 
             # Initialise
             self.mask = None
@@ -593,6 +635,15 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
 
             # Progress label
             self.Label = ttk.Label(self, text=task_thread.message)
@@ -600,9 +651,9 @@ def ProgressBar(mode, task_thread, _max, Abort_command):
 
             # Progress bar
             if mode == 'determinate':
-                self.pb = ttk.Progressbar(self, orient='horizontal', mode='determinate', maximum=_max, length=400)
+                self.pb = ttk.Progressbar(self, orient='horizontal', mode='determinate', maximum=_max, length=400*scaling)
             elif mode == 'indeterminate':
-                self.pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=400)
+                self.pb = ttk.Progressbar(self, orient='horizontal', mode='indeterminate', length=400*scaling)
             self.pb.grid(column=0, row=1, padx=10, pady=10)
 
             # Cancel button
@@ -743,6 +794,17 @@ def DeliveryBox():
             x = int(w/2 - size[0]/2)
             y = int(h/2 - size[1]/2)
             self.geometry('+{}+{}'.format(x, y))
+            
+            # Apply system scaling factor
+            dpi = self.winfo_fpixels('1i')
+            scaling = dpi/72
+            self.tk.call('tk', 'scaling', scaling)
+            ScaledFont = Font()
+            ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+            Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TEntry', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+            Style().configure('TCheckbutton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
 
             # Set the variables
             self.delivery_option = tk.StringVar(self, name='delivery_option')
@@ -1223,6 +1285,16 @@ def DeliveryBox():
 def User_Confirm(title, question):
     try:
         root = tk.Tk()
+        
+        # Apply system scaling factor
+        dpi = root.winfo_fpixels('1i')
+        scaling = dpi/72
+        root.tk.call('tk', 'scaling', scaling)
+        ScaledFont = Font()
+        ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+        Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        
         root.withdraw()
         answer = askquestion(title, question)
         root.destroy()
@@ -1231,7 +1303,7 @@ def User_Confirm(title, question):
         correct_answers = ['yes', 'y', 'no', 'n']
         while True:
             answer = input('(yes/no)? >>> ')
-            if answer.lower() in correct_answer:
+            if answer.lower() in correct_answers:
                 break
             print('Can\'t recognise input. Please try again.')
     return answer
@@ -1239,6 +1311,16 @@ def User_Confirm(title, question):
 def InfoBox(title, info):
     try:
         root = tk.Tk()
+        
+        # Apply system scaling factor
+        dpi = root.winfo_fpixels('1i')
+        scaling = dpi/72
+        root.tk.call('tk', 'scaling', scaling)
+        ScaledFont = Font()
+        ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+        Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        
         root.withdraw()
         showinfo(title, info)
         root.destroy()
@@ -1248,6 +1330,16 @@ def InfoBox(title, info):
 def ErrorBox(title, error):
     try:
         root = tk.Tk()
+        
+        # Apply system scaling factor
+        dpi = root.winfo_fpixels('1i')
+        scaling = dpi/72
+        root.tk.call('tk', 'scaling', scaling)
+        ScaledFont = Font()
+        ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+        Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        
         root.withdraw()
         showerror(title, error)
         root.destroy()
@@ -1257,6 +1349,16 @@ def ErrorBox(title, error):
 def AskOpenFile(title, filetype):
     try:
         root = tk.Tk()
+        
+        # Apply system scaling factor
+        dpi = root.winfo_fpixels('1i')
+        scaling = dpi/72
+        root.tk.call('tk', 'scaling', scaling)
+        ScaledFont = Font()
+        ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+        Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        
         root.withdraw()
         filename = askopenfilename(title=title, filetypes=filetype)
         root.destroy()
@@ -1277,6 +1379,16 @@ def AskOpenFile(title, filetype):
 def AskDirectory(title):
     try:
         root = tk.Tk()
+        
+        # Apply system scaling factor
+        dpi = root.winfo_fpixels('1i')
+        scaling = dpi/72
+        root.tk.call('tk', 'scaling', scaling)
+        ScaledFont = Font()
+        ScaledFont.config(size=int(ScaledFont.actual()['size']*scaling))
+        Style().configure('TLabel', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        Style().configure('TButton', font=(ScaledFont.actual()['family'], -ScaledFont.actual()['size']))
+        
         root.withdraw()
         directory = askdirectory(title=title)
         root.destroy()
